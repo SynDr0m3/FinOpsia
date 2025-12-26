@@ -57,11 +57,13 @@ The goal is to provide a reliable, production-ready system that showcases **Pyth
 1. **Clone the repository:**
 
 git clone https://github.com/SynDr0m3/FinOpsia.git
+
 cd FinOpsia
 
 2. **Create Conda environment**
 
 conda create -n finopsia python=3.11
+
 conda activate finopsia
 
 3. **Install dependencies**
