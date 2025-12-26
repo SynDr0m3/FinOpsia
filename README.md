@@ -18,13 +18,7 @@ The goal is to provide a reliable, production-ready system that showcases **Pyth
 
 ## Architecture
 
-[Transaction Source] --> [Python Ingestion Service] --> [ML Categorization & Forecast Service]
-| |
-v v
-[Disk Cache / DB] <------------------------ [Monitoring & Alert Service]
-|
-v
-[Automation Scheduler] --> [Retry & Recovery Logic]
+![FinOpsia Architecture](assets/architecture.png)
 
 **Components:**
 
@@ -37,55 +31,7 @@ v
 
 ## Repo Structure (Overview)
 
-finops-platform/
-│
-├── README.md # Architecture, usage, trade-offs
-├── setup.py / pyproject.toml
-├── requirements.txt # Python dependencies
-├── .gitignore
-├── LICENSE
-│
-├── src/
-│ ├── ingestion/
-│ │ ├── **init**.py
-│ │ ├── reader.py # Read CSV/API data
-│ │ ├── validator.py # Validate & clean
-│ │ └── loader.py # Push to ML pipeline / DB
-│ │
-│ ├── ml/
-│ │ ├── **init**.py
-│ │ ├── categorizer.py # CatBoost transaction classification
-│ │ ├── forecaster.py # Prophet cashflow forecasting
-│ │ └── persistence.py # Save/load models & cache
-│ │
-│ ├── automation/
-│ │ ├── **init**.py
-│ │ ├── scheduler.py # Cron-like job scheduler
-│ │ ├── retry.py # Retry & recovery logic
-│ │ └── tasks.py # Define jobs
-│ │
-│ ├── monitoring/
-│ │ ├── **init**.py
-│ │ ├── logger.py # Structured logging
-│ │ ├── metrics.py # Job metrics
-│ │ └── alert.py # Email/Slack alerts
-│ │
-│ └── dashboard/
-│ ├── **init**.py
-│ └── app.py # Flask/FastAPI dashboard
-│
-├── tests/
-│ ├── test_ingestion.py
-│ ├── test_ml.py
-│ ├── test_automation.py
-│ └── test_monitoring.py
-│
-├── ci/
-│ └── github-actions.yml # CI/CD pipelines
-│
-└── docker/
-├── Dockerfile # Container for platform
-└── docker-compose.yml # Multi-service local deployment
+![Repo Structure](assets/repo_structure.png)
 
 ---
 
