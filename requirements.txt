@@ -1,0 +1,57 @@
+annotated-doc==0.0.4
+annotated-types==0.7.0
+anyio==4.12.0
+blinker==1.9.0
+catboost @ https://pypi.org/packages/cp311/c/catboost/catboost-1.2.2-cp311-cp311-win_amd64.whl#sha256=0b8b5cdc2f1e1452018867a55902dc440d8a67a0869d5258f59b290d917cd73a
+click==8.3.1
+cmdstanpy @ file:///home/conda/feedstock_root/build_artifacts/cmdstanpy_1760997237797/work
+colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1733218098505/work
+contourpy @ file:///D:/bld/contourpy_1762525251009/work
+convertdate @ file:///home/conda/feedstock_root/build_artifacts/convertdate_1734513016989/work
+coverage==7.13.0
+cycler @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_cycler_1764466758/work
+ephem @ file:///D:/bld/ephem_1758630479894/work
+fastapi==0.127.0
+Flask==3.1.2
+fonttools @ file:///D:/bld/fonttools_1765632545629/work
+graphviz @ file:///home/conda/feedstock_root/build_artifacts/python-graphviz_1749998426524/work
+holidays @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_holidays_1765835887/work
+idna==3.11
+importlib_resources @ file:///home/conda/feedstock_root/build_artifacts/importlib_resources_1736252299705/work
+iniconfig==2.3.0
+itsdangerous==2.2.0
+Jinja2==3.1.6
+kiwisolver @ file:///D:/bld/bld/rattler-build_kiwisolver_1762488752/work
+loguru==0.7.3
+LunarCalendar @ file:///home/conda/feedstock_root/build_artifacts/lunarcalendar_1736269144102/work
+MarkupSafe==3.0.3
+matplotlib==3.10.8
+munkres==1.1.4
+narwhals @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_narwhals_1765893898/work
+numpy @ file:///D:/bld/numpy_1704280611640/work/dist/numpy-1.26.3-cp311-cp311-win_amd64.whl#sha256=4ab2007f5e9746d27b2342f5927a6102e8afd0b59ffd92c1401939703749d859
+packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1745345660/work
+pandas @ file:///D:/bld/pandas_1702057234875/work
+pillow @ file:///D:/bld/pillow_1726075236112/work
+plotly @ file:///home/conda/feedstock_root/build_artifacts/plotly_1763430243473/work
+pluggy==1.6.0
+prophet @ file:///D:/bld/prophet_1697764427589/work
+pydantic==2.12.5
+pydantic_core==2.41.5
+Pygments==2.19.2
+PyMeeus @ file:///home/conda/feedstock_root/build_artifacts/pymeeus_1734512290916/work
+pyparsing @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pyparsing_1766475444/work
+pytest==9.0.2
+python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_python-dateutil_1751104122/work
+pytz @ file:///home/conda/feedstock_root/build_artifacts/pytz_1742920838005/work
+scipy @ file:///C:/bld/scipy-split_1766107338578/work/dist/scipy-1.16.3-cp311-cp311-win_amd64.whl#sha256=4c1a5c75c2b5c1c59e4a27070d8b598350e4e3af66e17d4c4de299c9b4e9fe16
+six @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_six_1753199211/work
+stanio @ file:///home/conda/feedstock_root/build_artifacts/stanio_1734581598953/work
+starlette==0.50.0
+tqdm @ file:///home/conda/feedstock_root/build_artifacts/tqdm_1735661334605/work
+typing-inspection==0.4.2
+typing_extensions==4.15.0
+tzdata @ file:///home/conda/feedstock_root/build_artifacts/python-tzdata_1765719872007/work
+unicodedata2 @ file:///D:/bld/unicodedata2_1763054618863/work
+Werkzeug==3.1.4
+win32_setctime==1.2.0
+zipp @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_zipp_1764460141/work
