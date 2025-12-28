@@ -1,0 +1,3 @@
+transaction_id,account_id,description,category,amount,direction,transaction_date,posted_at
+        tx1,acc1,Coffee,Food,3.5,outflow,2025-01-01,2025-01-01 08:00
+        tx2,acc1,Salary,Income,1000.0,inflow,2025-01-01,2025-01-01 09:00

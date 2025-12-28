@@ -6,13 +6,17 @@
 
 ## Project Goal
 
-FinOpsia is a Python platform designed to automate and manage financial workflows for SMEs. It combines:
+FinOpsia is a Python-based financial operations platform that **ingests transaction data from external sources**, validates and persists it, and then applies **analytics, machine learning, and automation** to support financial decision-making for SMEs.
+
+In a real-world context, FinOpsia represents the **downstream analytics and intelligence layer** that sits after core banking systems, payment processors, or accounting platforms. It focuses on **data reliability, forecasting, and operational automation**, rather than transaction origination.
+
+FinOpsia combines:
 
 - **ML-powered transaction categorization** using CatBoost
 - **Cashflow forecasting** using Prophet
-- **Robust automation, scheduling, and monitoring**
+- **Robust automation, scheduling, and monitoring pipelines**
 
-The goal is to provide a reliable, production-ready system that showcases **Python proficiency, DevOps thinking, and system-level design**.
+The project is designed to be **production-oriented**, showcasing strong **Python engineering practices, DevOps thinking, and system-level architecture**, while remaining source-agnostic (CSV, APIs, or event streams).
 
 ---
 
