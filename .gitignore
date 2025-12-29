@@ -36,3 +36,9 @@ htmlcov/
 
 # Misc
 .DS_Store
+
+# ML model artifacts
+*.joblib
+*.pkl
+models/
+artifacts/
