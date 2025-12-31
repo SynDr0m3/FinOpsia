@@ -2,54 +2,68 @@ from pathlib import Path
 from typing import Any, Dict
 from loguru import logger
 import joblib
-
-from finopsia.ml import categorizer, forecaster
+from . import categorizer, forecaster
 
 MODEL_DIR = Path(__file__).parent / "artifacts"
-MODEL_DIR.mkdir(exist_ok=True)
+MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
 _MODEL_CACHE: Dict[str, Any] = {}
 
+def _model_path(name: str, account_id: str) -> Path:
+    return MODEL_DIR / f"{name}_{account_id}.joblib"
 
-def _model_path(name: str) -> Path:
-  return MODEL_DIR / f"{name}.joblib"
-
-
-def get_model(model_type: str, training_data=None) -> Any:
+def get_model(model_type: str, account_id: str, **train_kwargs) -> Any:
+    
     """
-    Load model from cache or disk.
-    If missing, trains, saves, and caches it.
+    Load a model from memory or disk. If missing, train, persist, and cache it.
+
+    Args:
+        model_type (str): Either "categorizer" or "forecaster".
+        account_id (str): Account id.
+        **train_kwargs: Arguments to pass to the train_model function if training is needed.
+            For categorizer: requires `df` keyword argument.
+            For forecaster: requires `account_id` keyword argument.
+
+    Returns:
+        Any: Trained or loaded model instance.
+
+    Raises:
+        ValueError: If an unknown model_type is requested.
     """
-    # One: Memory cache
-    if model_type in _MODEL_CACHE:
-        return _MODEL_CACHE[model_type]
 
-    path = _model_path(model_type)
+    cache_key = f"{model_type}:{account_id}"
 
-    # Two: Disk
+    # 1. In-memory cache
+    if cache_key in _MODEL_CACHE:
+        logger.debug(f"{cache_key} model retrieved from memory cache")
+        return _MODEL_CACHE[cache_key]
+
+    path = _model_path(model_type, account_id)
+
+    # 2. Disk
     if path.exists():
         model = joblib.load(path)
-        _MODEL_CACHE[model_type] = model
-        logger.info(f"{model_type} model loaded from disk")
+        _MODEL_CACHE[cache_key] = model
+        logger.info(f"{cache_key} model loaded from disk")
         return model
 
-    # Three: Train if missing
-    if training_data is None:
-        logger.error(f"No training data available for {model_type}")
-        raise RuntimeError(f"Model '{model_type}' not available and cannot be trained")
-
+        # 3. Lazy training
     if model_type == "categorizer":
-        model = categorizer.train_model(training_data)
-
+        # Requires `df` keyword argument in train_kwargs
+        model = categorizer.train_model(**train_kwargs)
     elif model_type == "forecaster":
-        model = forecaster.train_model(training_data)
-
+        # Requires `account_id` keyword argument in train_kwargs
+        model = forecaster.train_model(**train_kwargs)
     else:
+        logger.error(f"Unknown model type requested: {model_type}")
         raise ValueError(f"Unknown model type: {model_type}")
 
-    joblib.dump(model, path)
-    _MODEL_CACHE[model_type] = model
+    try:
+        joblib.dump(model, path)
+        logger.success(f"{model_type} model trained and saved")
+    except Exception as e:
+        logger.error(f"Failed to save {model_type} model: {e}")
+        raise
 
-    logger.success(f"{model_type} model trained and saved")
+    _MODEL_CACHE[cache_key] = model
     return model
-
