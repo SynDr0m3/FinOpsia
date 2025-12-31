@@ -6,6 +6,7 @@ from ingestion.reader import read_transactions
 from ingestion.validator import validate_transactions
 from ingestion.loader import DB_PATH
 
+
 DATA_DIR = Path("data")
 RAW_CSV = DATA_DIR / "raw/test_transactions.csv"
 PROCESSED_CSV = DATA_DIR / "processed/transactions_processed.csv"
