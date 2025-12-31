@@ -1,6 +1,8 @@
 from typing import List
 import pandas as pd
 from loguru import logger
+from core.currency import to_smallest_unit
+
 
 """
 Responsible for 
@@ -41,18 +43,18 @@ def validate_schema(df: pd.DataFrame) -> None:
 
 
 def normalize_types(df: pd.DataFrame) -> pd.DataFrame:
-    """Normalize data types and parse dates."""
     df = df.copy()
     logger.info("Normalizing types...")
 
-    # Parse datetime fields
     df["transaction_date"] = pd.to_datetime(df["transaction_date"], errors="coerce")
     df["posted_at"] = pd.to_datetime(df["posted_at"], errors="coerce")
-
-    # Ensure numeric amount
     df["amount"] = pd.to_numeric(df["amount"], errors="coerce")
 
-    # Normalize direction
+    # Default currency if missing
+    if "currency" not in df.columns:
+        df["currency"] = "NGN"
+
+    # Normalizing Direction
     df["direction"] = df["direction"].str.lower().str.strip()
 
     logger.info("Type normalization complete.")
@@ -80,22 +82,17 @@ def validate_values(df: pd.DataFrame) -> None:
 
 
 def derive_features(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Derive minimal features required by ML pipelines.
-    Raw data remains untouched on disk.
-    """
     df = df.copy()
     logger.info("Deriving features...")
 
-    # Signed amount for forecasting & aggregation
-    df["signed_amount"] = df.apply(
-        lambda row: row["amount"] if row["direction"] == "inflow" else -row["amount"],
-        axis=1,
-    )
+    # Convert amount to smallest unit
+    df["amount"] = [
+        to_smallest_unit(a, c)
+        for a, c in zip(df["amount"], df["currency"])
+    ]
 
     logger.info("Feature derivation complete.")
     return df
-
 
 def validate_transactions(df: pd.DataFrame) -> pd.DataFrame:
     """

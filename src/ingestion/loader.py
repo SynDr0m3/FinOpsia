@@ -19,7 +19,7 @@ def init_db():
                 account_id TEXT NOT NULL,
                 description TEXT NOT NULL,
                 category TEXT,
-                amount REAL NOT NULL,
+                amount INTEGER NOT NULL,      -- FIXED
                 direction TEXT CHECK(direction IN ('inflow', 'outflow')),
                 transaction_date DATE NOT NULL,
                 posted_at TIMESTAMP NOT NULL,
@@ -27,6 +27,7 @@ def init_db():
             )
             """
         )
+
         conn.commit()
     logger.info("Database initialized")
 
