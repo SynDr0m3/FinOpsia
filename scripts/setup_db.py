@@ -12,8 +12,9 @@ Run this script once before using the pipeline:
 import sqlite3
 from pathlib import Path
 
-# Database path (matches codebase)
-DB_PATH = Path("data/finopsia.db")
+# Database path (relative to project root)
+PROJECT_ROOT = Path(__file__).parent.parent
+DB_PATH = PROJECT_ROOT / "data" / "finopsia.db"
 
 
 def setup_database():
