@@ -9,10 +9,29 @@ from catboost import CatBoostClassifier
 # -----------------------------
 
 KEYWORD_RULES = {
-    "salary": ["salary", "wages", "payroll"],
-    "rent": ["rent", "lease"],
-    "transport": ["fuel", "diesel", "petrol", "uber", "bolt"],
-    "utilities": ["electricity", "power", "water", "internet"],
+    # Salaries - employee compensation
+    "Salaries": ["salary", "wages", "payroll", "bonus payment", "staff wages", "driver salary", "manager salary", "admin staff", "contractor fee"],
+    
+    # Rent - property/space payments
+    "Rent": ["rent", "lease", "store rental", "shop rent", "co-working", "storage unit", "kiosk", "office rent"],
+    
+    # Utilities - services/bills
+    "Utilities": ["electricity", "power", "water bill", "internet", "broadband", "dstv", "energy cost", "heating bill", "waste disposal", "sewage"],
+    
+    # Revenue - money coming in (be specific to avoid false matches)
+    "Revenue": ["cash sale", "pos transaction", "retail sales", "customer transfer", "sales revenue", "online order", "consulting revenue", "refund received"],
+    
+    # Inventory - stock purchases
+    "Inventory": ["goods received", "vendor purchase", "inventory restock", "supplier payment", "goods acquisition", "wholesale goods", "bulk product", "retail inventory"],
+    
+    # Marketing - advertising/promotion
+    "Marketing": ["marketing", "banner design", "radio ad", "product launch", "pr services", "facebook ads", "brand campaign", "email marketing"],
+    
+    # Supplies - equipment/consumables
+    "Supplies": ["tools & hardware", "merchandise restock", "medical supplies", "consumables", "safety equipment", "equipment purchase"],
+    
+    # Miscellaneous - catch-all (checked last)
+    "Miscellaneous": ["accounting", "freight", "permit fee", "customs duty", "conference fee", "shipping cost", "vehicle maintenance", "fuel cost"],
 }
 
 EMPTY_DESCRIPTIONS = {"", "nil", "nill", "n/a", "none", "-"}
@@ -32,8 +51,8 @@ def rule_based_category(
     """
     if not description or normalize_text(description) in EMPTY_DESCRIPTIONS:
         if direction == "inflow":
-            return "revenue"
-        return "miscellaneous"
+            return "Revenue"
+        return "Miscellaneous"
 
     desc = normalize_text(description)
 
