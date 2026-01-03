@@ -42,3 +42,5 @@ htmlcov/
 *.pkl
 models/
 artifacts/catboost_info/
+catboost_info/
+src/ml/artifacts/*.joblib
