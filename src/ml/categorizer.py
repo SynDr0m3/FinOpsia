@@ -78,7 +78,8 @@ def train_model(df: pd.DataFrame) -> CatBoostClassifier:
     if not required.issubset(df.columns):
         raise ValueError("Training data must contain description and category")
 
-    X = df["description"].astype(str)
+    # Prepare features as DataFrame with text column
+    X = df[["description"]].astype(str)
     y = df["category"].astype(str)
 
     model = CatBoostClassifier(
@@ -89,7 +90,8 @@ def train_model(df: pd.DataFrame) -> CatBoostClassifier:
         verbose=False,
     )
 
-    model.fit(X, y)
+    # Tell CatBoost that 'description' is a text feature
+    model.fit(X, y, text_features=["description"])
     logger.success("Categorizer training completed")
 
     return model
@@ -116,7 +118,9 @@ def predict(
         if rule_category is not None:
             categories.append(rule_category)
         else:
-            pred = model.predict([row["description"]])[0]
+            # Pass as DataFrame with 'description' column to match training format
+            pred_input = pd.DataFrame({"description": [str(row["description"])]})
+            pred = model.predict(pred_input)[0]
             categories.append(pred)
 
     df = df.copy()
