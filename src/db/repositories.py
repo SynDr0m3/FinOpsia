@@ -94,7 +94,8 @@ def fetch_transactions(
     df["txn_date"] = pd.to_datetime(df["txn_date"])
 
     if years_back:
-        cutoff = pd.Timestamp.utcnow() - pd.DateOffset(years=years_back)
+        # Use timezone-naive timestamp to match txn_date
+        cutoff = pd.Timestamp.now() - pd.DateOffset(years=years_back)
         df = df[df["txn_date"] >= cutoff]
 
     logger.debug(f"Fetched {len(df)} transactions")
