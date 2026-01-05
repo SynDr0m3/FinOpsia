@@ -1,6 +1,7 @@
 annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.12.0
+APScheduler==3.11.2
 blinker==1.9.0
 catboost @ https://pypi.org/packages/cp311/c/catboost/catboost-1.2.2-cp311-cp311-win_amd64.whl#sha256=0b8b5cdc2f1e1452018867a55902dc440d8a67a0869d5258f59b290d917cd73a
 click==8.3.1
@@ -21,6 +22,7 @@ importlib_resources @ file:///home/conda/feedstock_root/build_artifacts/importli
 iniconfig==2.3.0
 itsdangerous==2.2.0
 Jinja2==3.1.6
+joblib==1.5.3
 kiwisolver @ file:///D:/bld/bld/rattler-build_kiwisolver_1762488752/work
 loguru==0.7.3
 LunarCalendar @ file:///home/conda/feedstock_root/build_artifacts/lunarcalendar_1736269144102/work
@@ -51,6 +53,7 @@ tqdm @ file:///home/conda/feedstock_root/build_artifacts/tqdm_1735661334605/work
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 tzdata @ file:///home/conda/feedstock_root/build_artifacts/python-tzdata_1765719872007/work
+tzlocal==5.3.1
 unicodedata2 @ file:///D:/bld/unicodedata2_1763054618863/work
 Werkzeug==3.1.4
 win32_setctime==1.2.0
