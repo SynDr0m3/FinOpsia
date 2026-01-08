@@ -13,7 +13,7 @@ Policy enforcement:
 
 from pathlib import Path
 from typing import Any, Dict
-from loguru import logger
+from monitoring.logger import logger
 import joblib
 from . import categorizer, forecaster
 

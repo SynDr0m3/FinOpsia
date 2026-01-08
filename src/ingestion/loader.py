@@ -1,6 +1,6 @@
 import sqlite3
 import pandas as pd
-from loguru import logger
+from monitoring.logger import logger
 from pathlib import Path
 
 DB_PATH = Path("data/finopsia.db")

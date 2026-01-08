@@ -2,7 +2,7 @@
 Defines automated tasks for FinOpsia platform.
 Each task can be scheduled via the scheduler.
 """
-from loguru import logger
+from monitoring.logger import logger
 from automation.retry import retry
 
 

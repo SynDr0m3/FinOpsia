@@ -8,7 +8,7 @@ from the database without exposing raw SQL everywhere.
 import sqlite3
 from pathlib import Path
 from typing import List, Dict
-from loguru import logger
+from monitoring.logger import logger
 import pandas as pd
 
 

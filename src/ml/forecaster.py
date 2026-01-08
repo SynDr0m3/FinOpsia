@@ -1,7 +1,7 @@
 from datetime import timedelta
 import pandas as pd
 from prophet import Prophet
-from loguru import logger
+from monitoring.logger import logger
 
 from core.currency import from_smallest_unit
 from db.repositories import fetch_transactions, fetch_account_metadata

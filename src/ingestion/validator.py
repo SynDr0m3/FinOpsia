@@ -1,6 +1,6 @@
 from typing import List
 import pandas as pd
-from loguru import logger
+from monitoring.logger import logger
 from core.currency import to_smallest_unit
 
 

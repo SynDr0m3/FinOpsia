@@ -1,7 +1,7 @@
 from .reader import read_transactions
 from .validator import validate_transactions
 from .loader import load_transactions
-from loguru import logger
+from monitoring.logger import logger
 from pathlib import Path
 
 

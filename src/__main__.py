@@ -20,7 +20,7 @@ Golden Rule:
 
 import argparse
 from pathlib import Path
-from loguru import logger
+from monitoring.logger import logger
 
 from runner import run_pipeline
 from ml.persistence import train_and_save_model

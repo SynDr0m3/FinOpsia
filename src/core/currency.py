@@ -9,7 +9,7 @@ IMPORTANT:
   in the smallest unit to avoid floating point errors.
 """
 
-from loguru import logger
+from monitoring.logger import logger
 from typing import Dict
 
 

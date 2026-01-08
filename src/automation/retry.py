@@ -4,7 +4,7 @@ Provides a retry decorator with exponential backoff.
 """
 import time
 import functools
-from loguru import logger
+from monitoring.logger import logger
 
 
 def retry(max_attempts=3, delay=2, backoff=2, exceptions=(Exception,)):

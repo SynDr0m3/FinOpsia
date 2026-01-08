@@ -4,7 +4,7 @@ Starts the scheduler and schedules real pipeline jobs.
 """
 from automation.scheduler import add_cron_job, start_scheduler
 from automation.tasks import ingest_transactions, retrain_forecasters, run_forecasts
-from loguru import logger
+from monitoring.logger import logger
 import time
 
 if __name__ == "__main__":

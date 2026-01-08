@@ -5,7 +5,7 @@ Uses APScheduler for cron-like scheduling.
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from loguru import logger
+from monitoring.logger import logger
 
 scheduler = BackgroundScheduler()
 

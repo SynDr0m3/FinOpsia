@@ -7,7 +7,7 @@ Flow:
 """
 
 from pathlib import Path
-from loguru import logger
+from monitoring.logger import logger
 import pandas as pd
 
 # Ingestion
