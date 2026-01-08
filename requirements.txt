@@ -4,6 +4,8 @@ anyio==4.12.0
 APScheduler==3.11.2
 blinker==1.9.0
 catboost @ https://pypi.org/packages/cp311/c/catboost/catboost-1.2.2-cp311-cp311-win_amd64.whl#sha256=0b8b5cdc2f1e1452018867a55902dc440d8a67a0869d5258f59b290d917cd73a
+certifi==2026.1.4
+charset-normalizer==3.4.4
 click==8.3.1
 cmdstanpy @ file:///home/conda/feedstock_root/build_artifacts/cmdstanpy_1760997237797/work
 colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1733218098505/work
@@ -45,6 +47,7 @@ pyparsing @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_
 pytest==9.0.2
 python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_python-dateutil_1751104122/work
 pytz @ file:///home/conda/feedstock_root/build_artifacts/pytz_1742920838005/work
+requests==2.32.5
 scipy @ file:///C:/bld/scipy-split_1766107338578/work/dist/scipy-1.16.3-cp311-cp311-win_amd64.whl#sha256=4c1a5c75c2b5c1c59e4a27070d8b598350e4e3af66e17d4c4de299c9b4e9fe16
 six @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_six_1753199211/work
 stanio @ file:///home/conda/feedstock_root/build_artifacts/stanio_1734581598953/work
@@ -55,6 +58,7 @@ typing_extensions==4.15.0
 tzdata @ file:///home/conda/feedstock_root/build_artifacts/python-tzdata_1765719872007/work
 tzlocal==5.3.1
 unicodedata2 @ file:///D:/bld/unicodedata2_1763054618863/work
+urllib3==2.6.3
 Werkzeug==3.1.4
 win32_setctime==1.2.0
 zipp @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_zipp_1764460141/work
