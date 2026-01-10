@@ -34,17 +34,17 @@ class ValidationError(Exception):
 
 def validate_schema(df: pd.DataFrame) -> None:
     """Ensure required columns exist."""
-    logger.info("Validating schema...")
+    logger.info("Validating schema...", extra={"account_id": None, "user_id": None})
     missing = set(REQUIRED_COLUMNS) - set(df.columns)
     if missing:
-        logger.error(f"Missing required columns: {missing}")
+        logger.error(f"Missing required columns: {missing}", extra={"account_id": None, "user_id": None})
         raise ValidationError(f"Missing required columns: {missing}")
-    logger.info("Schema validation passed.")
+    logger.info("Schema validation passed.", extra={"account_id": None, "user_id": None})
 
 
 def normalize_types(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
-    logger.info("Normalizing types...")
+    logger.info("Normalizing types...", extra={"account_id": None, "user_id": None})
 
     df["transaction_date"] = pd.to_datetime(df["transaction_date"], errors="coerce")
     df["posted_at"] = pd.to_datetime(df["posted_at"], errors="coerce")
@@ -57,7 +57,7 @@ def normalize_types(df: pd.DataFrame) -> pd.DataFrame:
     # Normalizing Direction
     df["direction"] = df["direction"].str.lower().str.strip()
 
-    logger.info("Type normalization complete.")
+    logger.info("Type normalization complete.", extra={"account_id": None, "user_id": None})
     return df
 
 

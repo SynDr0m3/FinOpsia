@@ -23,7 +23,7 @@ def _signed_amount(row: pd.Series) -> int:
     return row["amount"] if row["direction"] == "inflow" else -row["amount"]
 
 
-def build_daily_balance_series(account_id: str) -> pd.DataFrame:
+def build_daily_balance_series(account_id: str, user_id: str) -> pd.DataFrame:
     """
     Build daily balance time series for forecasting.
 
@@ -32,9 +32,9 @@ def build_daily_balance_series(account_id: str) -> pd.DataFrame:
     - y: balance (major currency unit)
     """
 
-    logger.info(f"Building daily balance series for account {account_id}")
+    logger.info(f"Building daily balance series for account {account_id}", extra={"account_id": account_id, "user_id": user_id})
 
-    meta = fetch_account_metadata(account_id)
+    meta = fetch_account_metadata(account_id, user_id=user_id)
     currency = meta["currency"]
     starting_balance = meta["starting_balance"]  # smallest unit
 
@@ -49,7 +49,7 @@ def build_daily_balance_series(account_id: str) -> pd.DataFrame:
 
         if txns.empty:
             logger.warning(
-                f"No transactions found for last {lookback_years} years"
+                f"No transactions found for last {lookback_years} years", extra={"account_id": account_id, "user_id": user_id}
             )
             lookback_years += 1
             continue
@@ -70,7 +70,7 @@ def build_daily_balance_series(account_id: str) -> pd.DataFrame:
 
     if daily_cashflow.empty or len(daily_cashflow) < MIN_DAYS_REQUIRED:
         logger.error(
-            f"Insufficient data to train forecaster for account {account_id}"
+            f"Insufficient data to train forecaster for account {account_id}", extra={"account_id": account_id, "user_id": user_id}
         )
         raise InsufficientDataError(
             f"Not enough data to train model for account {account_id}"
@@ -86,20 +86,20 @@ def build_daily_balance_series(account_id: str) -> pd.DataFrame:
     })
 
     logger.success(
-        f"Built balance series with {len(df)} days of data"
+        f"Built balance series with {len(df)} days of data", extra={"account_id": account_id, "user_id": user_id}
     )
 
     return df
 
 
-def train_model(account_id: str) -> Prophet:
+def train_model(account_id: str, user_id: str) -> Prophet:
     """
     Train a Prophet balance forecasting model.
     """
 
-    logger.info(f"Training balance forecaster for account {account_id}")
+    logger.info(f"Training balance forecaster for account {account_id}", extra={"account_id": account_id, "user_id": user_id})
 
-    df = build_daily_balance_series(account_id)
+    df = build_daily_balance_series(account_id, user_id)
 
     model = Prophet(
         daily_seasonality=False,
@@ -109,7 +109,7 @@ def train_model(account_id: str) -> Prophet:
 
     model.fit(df)
 
-    logger.success("Balance forecaster training completed")
+    logger.success("Balance forecaster training completed", extra={"account_id": account_id, "user_id": user_id})
 
     return model
 
@@ -122,7 +122,7 @@ def forecast_balance(
     Forecast future balances using a trained model.
     """
 
-    logger.info(f"Forecasting balance for next {days_ahead} days")
+    logger.info(f"Forecasting balance for next {days_ahead} days", extra={"account_id": None, "user_id": None})
 
     future = model.make_future_dataframe(periods=days_ahead)
     forecast = model.predict(future)

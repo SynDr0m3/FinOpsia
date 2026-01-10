@@ -61,6 +61,7 @@ def _model_path(name: str, account_id: str | None) -> Path:
 def get_model(
     model_type: str,
     account_id: str | None = None,
+    user_id: str | None = None,
 ) -> Any:
     """
     Load a model from memory or disk.
@@ -72,6 +73,7 @@ def get_model(
     Args:
         model_type: "categorizer" or "forecaster"
         account_id: Required for forecaster (per-account scope)
+        user_id: (Optional) Required for lazy training forecaster in multi-tenant context
 
     Returns:
         Loaded model instance
@@ -91,7 +93,7 @@ def get_model(
         raise ValueError("account_id is required for forecaster models")
 
     if model_type == "categorizer" and account_id:
-        logger.warning("account_id ignored for categorizer model")
+        logger.warning("account_id ignored for categorizer model", extra={"account_id": account_id, "user_id": None})
         account_id = None
 
     cache_key = (
@@ -102,7 +104,7 @@ def get_model(
 
     # ---- 1. In-memory cache ----
     if cache_key in _MODEL_CACHE:
-        logger.debug(f"{cache_key} loaded from memory cache")
+        logger.debug(f"{cache_key} loaded from memory cache", extra={"account_id": account_id, "user_id": None})
         return _MODEL_CACHE[cache_key]
 
     path = _model_path(model_type, account_id)
@@ -111,7 +113,7 @@ def get_model(
     if path.exists():
         model = joblib.load(path)
         _MODEL_CACHE[cache_key] = model
-        logger.info(f"{cache_key} loaded from disk")
+        logger.info(f"{cache_key} loaded from disk", extra={"account_id": account_id, "user_id": None})
         return model
 
     # ---- 3. Model not found: enforce policy ----
@@ -120,7 +122,7 @@ def get_model(
         logger.error(
             f"{model_type} model not found. "
             "Explicit retraining required via: "
-            "python -m finopsia retrain categorizer --csv <labeled_data.csv>"
+            "python -m finopsia retrain categorizer --csv <labeled_data.csv>", extra={"account_id": account_id, "user_id": None}
         )
         raise ModelNotFoundError(
             f"{model_type} model not found at {path}. "
@@ -128,8 +130,15 @@ def get_model(
         )
 
     # ---- 4. Auto-train (forecaster only) ----
-    logger.info(f"{cache_key} not found, initiating auto-training")
-    model = forecaster.train_model(account_id=account_id)
+
+    if user_id is None:
+        logger.info(f"{cache_key} not found, but user_id not provided for lazy training", extra={"account_id": account_id, "user_id": None})
+        raise NotImplementedError("user_id must be provided for training forecaster in multi-tenant context")
+    logger.info(f"{cache_key} not found, initiating auto-training", extra={"account_id": account_id, "user_id": user_id})
+    model = forecaster.train_model(account_id=account_id, user_id=user_id)
+    _save_model(model, path, cache_key)
+    _MODEL_CACHE[cache_key] = model
+    return model
 
     _save_model(model, path, cache_key)
     _MODEL_CACHE[cache_key] = model
@@ -160,7 +169,7 @@ def train_and_save_model(
     if model_type not in MODEL_POLICY:
         raise ValueError(f"Unknown model type: {model_type}")
 
-    logger.info(f"Explicit retraining requested for {model_type}")
+    logger.info(f"Explicit retraining requested for {model_type}", extra={"account_id": account_id, "user_id": None})
 
     # ---- Train model ----
     if model_type == "categorizer":
@@ -175,7 +184,10 @@ def train_and_save_model(
     elif model_type == "forecaster":
         if not account_id:
             raise ValueError("account_id is required for forecaster retraining")
-        model = forecaster.train_model(account_id=account_id)
+        user_id = train_kwargs.get("user_id")
+        if not user_id:
+            raise ValueError("user_id is required for forecaster retraining in multi-tenant context")
+        model = forecaster.train_model(account_id=account_id, user_id=user_id)
         cache_key = f"forecaster:{account_id}"
         path = _model_path(model_type, account_id)
 
@@ -190,7 +202,7 @@ def _save_model(model: Any, path: Path, cache_key: str) -> None:
     """Save model to disk with error handling."""
     try:
         joblib.dump(model, path)
-        logger.success(f"{cache_key} model trained and saved to {path}")
+        logger.success(f"{cache_key} model trained and saved to {path}", extra={"account_id": None, "user_id": None})
     except Exception as e:
-        logger.error(f"Failed to save {cache_key} model: {e}")
+        logger.error(f"Failed to save {cache_key} model: {e}", extra={"account_id": None, "user_id": None})
         raise

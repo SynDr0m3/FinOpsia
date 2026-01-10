@@ -45,14 +45,14 @@ def save_processed_csv(df: pd.DataFrame):
     logger.info(f"Processed transactions saved to {PROCESSED_CSV}")
 
 
-def load_transactions(df: pd.DataFrame) -> None:
+def load_transactions(df: pd.DataFrame, user_id: str) -> None:
     """
     Persist validated transactions to the database and save CSV backup.
 
     Args:
         df (pd.DataFrame): Validated transaction data
     """
-    logger.info("Starting transaction load")
+    logger.info("Starting transaction load", extra={"account_id": None, "user_id": user_id})
 
     init_db()
 
@@ -64,14 +64,14 @@ def load_transactions(df: pd.DataFrame) -> None:
                 if_exists="append",
                 index=False
             )
-            logger.info(f"Loaded {len(df)} transactions to database")
+            logger.info(f"Loaded {len(df)} transactions to database", extra={"account_id": None, "user_id": user_id})
 
         except sqlite3.IntegrityError as e:
-            logger.warning("Duplicate transaction detected, skipped insertion")
-            logger.debug(str(e))
+            logger.warning("Duplicate transaction detected, skipped insertion", extra={"account_id": None, "user_id": user_id})
+            logger.debug(str(e), extra={"account_id": None, "user_id": user_id})
 
         except Exception as e:
-            logger.error("Failed to load transactions")
+            logger.error("Failed to load transactions", extra={"account_id": None, "user_id": user_id})
             raise
 
     # Save to CSV backup

@@ -135,28 +135,28 @@ def main():
 
     elif args.command == "retrain":
         if args.model == "categorizer":
-            logger.info("[Backend] Retraining global categorizer model")
+            logger.info("[Backend] Retraining global categorizer model", extra={"account_id": None, "user_id": None})
 
             # Load labeled training data from CSV
             import pandas as pd
             training_df = pd.read_csv(args.csv)
-            logger.info(f"Loaded {len(training_df)} labeled samples from {args.csv}")
+            logger.info(f"Loaded {len(training_df)} labeled samples from {args.csv}", extra={"account_id": None, "user_id": None})
 
             train_and_save_model(
                 model_type="categorizer",
                 df=training_df,
             )
-            logger.success("Categorizer retraining completed")
+            logger.success("Categorizer retraining completed", extra={"account_id": None, "user_id": None})
 
         elif args.model == "forecaster":
             logger.info(
-                f"[Backend] Retraining forecaster for account {args.account_id}"
+                f"[Backend] Retraining forecaster for account {args.account_id}", extra={"account_id": args.account_id, "user_id": None})
             )
             train_and_save_model(
                 model_type="forecaster",
                 account_id=args.account_id,
             )
-            logger.success(f"Forecaster retraining completed for account {args.account_id}")
+            logger.success(f"Forecaster retraining completed for account {args.account_id}", extra={"account_id": args.account_id, "user_id": None})
 
 
 if __name__ == "__main__":

@@ -28,6 +28,7 @@ DEFAULT_FORECAST_DAYS = 7
 def run_pipeline(
     csv_path: Path,
     *,
+    user_id: str,
     forecast: bool = False,
     account_id: str | None = None,
     forecast_days: int = DEFAULT_FORECAST_DAYS,
@@ -58,19 +59,19 @@ def run_pipeline(
         ModelNotFoundError: If categorizer model is missing
     """
 
-    logger.info("Starting FinOpsia pipeline")
+    logger.info("Starting FinOpsia pipeline", extra={"account_id": account_id if 'account_id' in locals() else None, "user_id": user_id})
 
     # -----------------------------
     # 1. Read
     # -----------------------------
     df_raw = read_transactions(csv_path)
-    logger.info(f"Read {len(df_raw)} transactions from {csv_path}")
+    logger.info(f"Read {len(df_raw)} transactions from {csv_path}", extra={"account_id": account_id if 'account_id' in locals() else None, "user_id": user_id})
 
     # -----------------------------
     # 2. Validate
     # -----------------------------
     df_raw = validate_transactions(df_raw)
-    logger.info(f"{len(df_raw)} transactions after validation")
+    logger.info(f"{len(df_raw)} transactions after validation", extra={"account_id": account_id if 'account_id' in locals() else None, "user_id": user_id})
 
     # -----------------------------
     # 3. Categorize (MANDATORY)
@@ -79,27 +80,27 @@ def run_pipeline(
     # No lazy-training allowed — model writes to DB.
     # If missing, user must run: python -m finopsia retrain categorizer --csv <data>
 
-    logger.info("Loading categorizer model (inference-only)")
+    logger.info("Loading categorizer model (inference-only)", extra={"account_id": account_id if 'account_id' in locals() else None, "user_id": user_id})
 
     categorizer_model = get_model(model_type="categorizer")
 
-    logger.info("Categorizing transactions")
+    logger.info("Categorizing transactions", extra={"account_id": account_id if 'account_id' in locals() else None, "user_id": user_id})
     df_categorized = categorizer.predict(
         df=df_raw,
         model=categorizer_model,
     )
 
-    logger.success("Transaction categorization completed")
+    logger.success("Transaction categorization completed", extra={"account_id": account_id if 'account_id' in locals() else None, "user_id": user_id})
 
     # -----------------------------
     # 4. Persist (DB + CSV)
     # -----------------------------
     
     if dry_run:
-      logger.warning("Dry-run enabled: skipping DB and CSV persistence")
+        logger.warning("Dry-run enabled: skipping DB and CSV persistence", extra={"account_id": account_id if 'account_id' in locals() else None, "user_id": user_id})
     else:
-      load_transactions(df_categorized)
-      logger.success("Transactions saved to database and processed CSV")
+        load_transactions(df_categorized, user_id=user_id)
+        logger.success("Transactions saved to database and processed CSV", extra={"account_id": account_id if 'account_id' in locals() else None, "user_id": user_id})
 
 
     # -----------------------------
@@ -115,7 +116,7 @@ def run_pipeline(
             )
 
         logger.info(
-            f"Loading forecaster model for account {account_id}"
+            f"Loading forecaster model for account {account_id}", extra={"account_id": account_id, "user_id": None}
         )
 
         # Forecaster will auto-train if missing (per MODEL_POLICY)
@@ -125,7 +126,7 @@ def run_pipeline(
         )
 
         logger.info(
-            f"Forecasting balances for next {forecast_days} days"
+            f"Forecasting balances for next {forecast_days} days", extra={"account_id": account_id, "user_id": None}
         )
 
         forecast_df = forecast_balance(
@@ -133,11 +134,11 @@ def run_pipeline(
             days_ahead=forecast_days,
         )
 
-        logger.success("Forecasting completed")
-        logger.debug(f"\n{forecast_df}")
+        logger.success("Forecasting completed", extra={"account_id": account_id, "user_id": None})
+        logger.debug(f"\n{forecast_df}", extra={"account_id": account_id, "user_id": None})
 
-    logger.success("FinOpsia pipeline completed successfully")
+    logger.success("FinOpsia pipeline completed successfully", extra={"account_id": account_id if 'account_id' in locals() else None, "user_id": user_id})
 
 
 if __name__ == "__main__":
-    run_pipeline(csv_path=DEFAULT_CSV_PATH)
+    run_pipeline(csv_path=DEFAULT_CSV_PATH, user_id="test_user")

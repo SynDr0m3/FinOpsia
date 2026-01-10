@@ -72,7 +72,7 @@ def train_model(df: pd.DataFrame) -> CatBoostClassifier:
     Train categorizer using labeled data.
     Expects columns: description, category
     """
-    logger.info("Training transaction categorizer model")
+    logger.info("Training transaction categorizer model", extra={"account_id": None, "user_id": None})
 
     required = {"description", "category"}
     if not required.issubset(df.columns):
@@ -92,7 +92,7 @@ def train_model(df: pd.DataFrame) -> CatBoostClassifier:
 
     # Tell CatBoost that 'description' is a text feature
     model.fit(X, y, text_features=["description"])
-    logger.success("Categorizer training completed")
+    logger.success("Categorizer training completed", extra={"account_id": None, "user_id": None})
 
     return model
 
@@ -105,7 +105,7 @@ def predict(
     Predict categories for transactions.
     Rules first, ML fallback.
     """
-    logger.info("Starting transaction categorization")
+    logger.info("Starting transaction categorization", extra={"account_id": None, "user_id": None})
 
     categories = []
 
@@ -126,5 +126,5 @@ def predict(
     df = df.copy()
     df["category"] = categories
 
-    logger.success("Transaction categorization completed")
+    logger.success("Transaction categorization completed", extra={"account_id": None, "user_id": None})
     return df
