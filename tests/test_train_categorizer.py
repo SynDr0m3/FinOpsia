@@ -20,6 +20,7 @@ from ml.persistence import train_and_save_model, MODEL_DIR
 
 
 RAW_CSV = Path("data/raw/transactions.csv")
+TEST_USER_ID = "test_user"
 
 
 @pytest.fixture

@@ -38,6 +38,7 @@ from db.repositories import DB_PATH
 
 # Test all account IDs that exist in transactions.csv
 TEST_ACCOUNT_IDS = ["1", "2", "3", "4"]
+TEST_USER_ID = "test_user"
 
 
 @pytest.fixture
@@ -68,7 +69,7 @@ class TestBuildBalanceSeries:
     def test_build_series_for_all_accounts(self, check_database, account_id):
         """Test building daily balance series for each account."""
         try:
-            df = build_daily_balance_series(account_id)
+            df = build_daily_balance_series(account_id, user_id="test_user")
 
             # Should have ds (date) and y (balance) columns
             assert "ds" in df.columns
@@ -93,7 +94,7 @@ class TestForecasterTraining:
     def test_train_model_for_all_accounts(self, check_database, account_id):
         """Test training a forecaster model for each account."""
         try:
-            model = train_model(account_id)
+            model = train_model(account_id, user_id="test_user")
 
             # Should be a Prophet model
             assert hasattr(model, "predict")
@@ -111,6 +112,7 @@ class TestForecasterTraining:
             model = train_and_save_model(
                 model_type="forecaster",
                 account_id=account_id,
+                user_id="test_user"
             )
 
             # Verify model was saved
@@ -200,7 +202,7 @@ class TestLazyTraining:
         for account_id in TEST_ACCOUNT_IDS:
             try:
                 # This should trigger lazy training
-                model = get_model("forecaster", account_id=account_id)
+                model = get_model("forecaster", account_id=account_id, user_id="test_user")
 
                 # Model should exist now
                 model_path = tmp_path / f"forecaster_{account_id}.joblib"
@@ -236,14 +238,14 @@ class TestLazyTraining:
 
         try:
             # First call - should lazy train
-            model1 = get_model("forecaster", account_id=account_id)
+            model1 = get_model("forecaster", account_id=account_id, user_id="test_user")
 
             # Check cache
             cache_key = f"forecaster:{account_id}"
             assert cache_key in fresh_cache, "Model should be cached"
 
             # Second call - should hit cache
-            model2 = get_model("forecaster", account_id=account_id)
+            model2 = get_model("forecaster", account_id=account_id, user_id="test_user")
 
             # Should be same object
             assert model1 is model2, "Second call should return cached model"

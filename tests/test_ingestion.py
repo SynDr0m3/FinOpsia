@@ -24,8 +24,15 @@ def sample_csv():
 
 
 def test_full_ingestion(sample_csv):
+
+    # Clear transactions table for test isolation
+    import sqlite3
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("DELETE FROM transactions")
+        conn.commit()
+
     # Run full ingestion pipeline
-    run_ingestion(sample_csv)
+    run_ingestion(sample_csv, user_id="test_user")
 
     # Read back from DB
     import sqlite3

@@ -10,17 +10,17 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 def test_ingest_transactions_runs():
     """Test that ingestion task runs without error."""
-    ingest_transactions()
+    ingest_transactions(user_id="test_user")
 
 
 def test_retrain_forecasters_runs():
     """Test that forecaster retraining runs without error."""
-    retrain_forecasters()
+    retrain_forecasters(user_id="test_user")
 
 
 def test_run_forecasts_runs():
     """Test that forecasting runs without error."""
-    run_forecasts()
+    run_forecasts(user_id="test_user")
 
 
 def test_scheduler_add_and_run_job():

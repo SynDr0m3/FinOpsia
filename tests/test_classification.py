@@ -33,6 +33,7 @@ from ingestion.validator import normalize_types, derive_features
 
 # Paths
 RAW_CSV = Path("data/raw/transactions.csv")
+TEST_USER_ID = "test_user"
 
 # Sample transactions WITHOUT category (for unit tests)
 SAMPLE_TRANSACTIONS = [
@@ -296,29 +297,31 @@ class TestIntegrationClassifyAndPersist:
         # Step 3: Initialize DB and save
         init_db()
 
-        # Also set up account_metadata table for forecaster
+        # Also set up accounts table for forecaster
         with sqlite3.connect(DB_PATH) as conn:
             conn.execute("""
-                CREATE TABLE IF NOT EXISTS account_metadata (
+                CREATE TABLE IF NOT EXISTS accounts (
                     account_id TEXT PRIMARY KEY,
+                    user_id INTEGER NOT NULL,
+                    account_number TEXT UNIQUE NOT NULL CHECK(length(account_number) = 10 AND account_number GLOB '[0-9]*'),
                     starting_balance INTEGER NOT NULL,
                     currency TEXT NOT NULL,
-                    last_updated DATE
+                    last_updated DATE,
+                    FOREIGN KEY (user_id) REFERENCES users(user_id)
                 )
             """)
             
             # Insert sample accounts for forecaster tests
             sample_accounts = [
-                ("1", 50000000, "NGN", "2025-01-01"),
-                ("2", 75000000, "NGN", "2025-01-01"),
-                ("3", 100000000, "NGN", "2025-01-01"),
-                ("4", 25000000, "NGN", "2025-01-01"),
+                ("1", 1, "0449371890", 50000000, "NGN", "2025-01-01"),
+                ("2", 2, "0449371891", 75000000, "NGN", "2025-01-01"),
+                ("3", 3, "0449371892", 100000000, "NGN", "2025-01-01"),
+                ("4", 4, "0449371893", 25000000, "NGN", "2025-01-01"),
             ]
-            
             conn.executemany("""
-                INSERT OR REPLACE INTO account_metadata
-                (account_id, starting_balance, currency, last_updated)
-                VALUES (?, ?, ?, ?)
+                INSERT OR REPLACE INTO accounts
+                (account_id, user_id, account_number, starting_balance, currency, last_updated)
+                VALUES (?, ?, ?, ?, ?, ?)
             """, sample_accounts)
             conn.commit()
             print("\n✓ Account metadata table set up for accounts 1-4")
@@ -330,7 +333,7 @@ class TestIntegrationClassifyAndPersist:
             print("Cleared existing transactions from DB")
 
         # Save classified transactions
-        load_transactions(classified_df)
+        load_transactions(classified_df, user_id=TEST_USER_ID)
         print(f"Saved {len(classified_df)} classified transactions to DB")
 
         # Step 4: Verify data in DB
