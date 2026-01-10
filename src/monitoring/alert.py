@@ -24,9 +24,9 @@ def send_email_alert(subject: str, body: str, to_email: str, from_email: str, sm
 			server.starttls()
 			server.login(smtp_user, smtp_password)
 			server.send_message(msg)
-		logger.success(f"Email alert sent to {to_email}")
+		logger.success(f"Email alert sent to {to_email}", extra={"account_id": None, "user_id": None})
 	except Exception as e:
-		logger.error(f"Failed to send email alert: {e}")
+		logger.error(f"Failed to send email alert: {e}", extra={"account_id": None, "user_id": None})
 
 
 def send_slack_alert(message: str, webhook_url: str):
@@ -37,11 +37,11 @@ def send_slack_alert(message: str, webhook_url: str):
 		payload = {"text": message}
 		response = requests.post(webhook_url, json=payload)
 		if response.status_code == 200:
-			logger.success("Slack alert sent successfully")
+			logger.success("Slack alert sent successfully", extra={"account_id": None, "user_id": None})
 		else:
-			logger.error(f"Slack alert failed: {response.status_code} {response.text}")
+			logger.error(f"Slack alert failed: {response.status_code} {response.text}", extra={"account_id": None, "user_id": None})
 	except Exception as e:
-		logger.error(f"Failed to send Slack alert: {e}")
+		logger.error(f"Failed to send Slack alert: {e}", extra={"account_id": None, "user_id": None})
 
 
 def send_alert(message: str, email_config: dict = None, slack_webhook: str = None):

@@ -10,21 +10,26 @@ import os
 # Log level (can be set via env or default to INFO)
 LOG_LEVEL = os.environ.get("FINOPSIA_LOG_LEVEL", "INFO")
 
-# Log format
-LOG_FORMAT = "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
+
+# Log format (human-readable, safe for Loguru)
+LOG_FORMAT = "{level.name} | {name}:{function}:{line} - {message}"
+
+# JSON format for structured logging (account_id, user_id, etc.)
+LOG_JSON_FORMAT = '{"level":"{level.name}","name":"{name}","function":"{function}","line":{line},"message":"{message}","account_id":"{extra[account_id]}","user_id":"{extra[user_id]}"}'
+
 
 # Remove default loguru handler
 logger.remove()
 
-# Add console handler
+# Add console handler (human-readable)
 logger.add(sys.stdout, level=LOG_LEVEL, format=LOG_FORMAT, enqueue=True, backtrace=True, diagnose=True)
 
-# Optional: Add file handler with rotation and retention
+# Optional: Add file handler with rotation and retention (JSON format)
 LOG_FILE = os.environ.get("FINOPSIA_LOG_FILE", "logs/finopsia.log")
 logger.add(
     LOG_FILE,
     level=LOG_LEVEL,
-    format=LOG_FORMAT,
+    format=LOG_JSON_FORMAT,
     rotation="10 MB",
     retention="10 days",
     compression="zip",
@@ -33,4 +38,3 @@ logger.add(
     diagnose=True,
 )
 
-# Usage: from monitoring.logger import logger
