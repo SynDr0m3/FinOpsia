@@ -1,7 +1,8 @@
 import sqlite3
 import pandas as pd
-from monitoring.logger import logger
+from src.monitoring.logger import logger
 from pathlib import Path
+from src.db.repositories import fetch_user_account_ids
 
 DB_PATH = Path("data/finopsia.db")
 PROCESSED_CSV = Path("data/processed/transactions_processed.csv")
@@ -12,6 +13,7 @@ def init_db():
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("PRAGMA foreign_keys = ON")
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS transactions (
@@ -21,9 +23,11 @@ def init_db():
                 category TEXT,
                 amount INTEGER NOT NULL,      -- FIXED
                 direction TEXT CHECK(direction IN ('inflow', 'outflow')),
+                currency TEXT,
                 transaction_date DATE NOT NULL,
                 posted_at TIMESTAMP NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (account_id) REFERENCES accounts(account_id)
             )
             """
         )
@@ -56,7 +60,23 @@ def load_transactions(df: pd.DataFrame, user_id: str) -> None:
 
     init_db()
 
+    allowed_account_ids = set(fetch_user_account_ids(user_id))
+    if not allowed_account_ids:
+        raise ValueError(f"User {user_id} does not own any accounts")
+
+    incoming_account_ids = set(df["account_id"].astype(str))
+    disallowed_account_ids = sorted(incoming_account_ids - allowed_account_ids)
+    if disallowed_account_ids:
+        logger.error(
+            f"User {user_id} attempted to load transactions for unauthorized accounts: {disallowed_account_ids}",
+            extra={"account_id": None, "user_id": user_id},
+        )
+        raise PermissionError(
+            f"User {user_id} cannot load transactions for accounts: {', '.join(disallowed_account_ids)}"
+        )
+
     with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("PRAGMA foreign_keys = ON")
         try:
             df.to_sql(
                 "transactions",

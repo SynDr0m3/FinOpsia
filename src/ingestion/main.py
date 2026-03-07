@@ -1,7 +1,7 @@
 from .reader import read_transactions
 from .validator import validate_transactions
 from .loader import load_transactions
-from monitoring.logger import logger
+from src.monitoring.logger import logger
 from pathlib import Path
 
 
@@ -9,7 +9,7 @@ DATA_PATH = Path("data/raw/transactions.csv")
 
 
 
-def run_ingestion(csv_path: Path = DATA_PATH, user_id: str = "test_user"):
+def run_ingestion(csv_path: Path = DATA_PATH, user_id: int | str = 1):
     """Full ingestion pipeline: read → validate → persist"""
     logger.info("Starting full ingestion pipeline", extra={"account_id": None, "user_id": user_id})
 
@@ -27,4 +27,4 @@ def run_ingestion(csv_path: Path = DATA_PATH, user_id: str = "test_user"):
 
 
 if __name__ == "__main__":
-    run_ingestion(user_id="test_user")
+    run_ingestion(user_id=1)

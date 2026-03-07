@@ -8,8 +8,8 @@ Integration test for the full FinOpsia multi-tenant pipeline.
 """
 import subprocess
 import pytest
-import sqlite3
 from pathlib import Path
+import pandas as pd
 
 # Ensure project root is in sys.path for src imports
 import sys
@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 # Import pipeline and DB functions
 from src.runner import run_pipeline
-from src.db.repositories import fetch_account_metadata, fetch_transactions
+from src.db.repositories import fetch_account_metadata, fetch_transactions, fetch_user_by_username, fetch_user_account_ids
 from src.ingestion.main import run_ingestion
 
 DB_PATH = Path("data/finopsia.db")
@@ -26,12 +26,6 @@ DB_PATH = Path("data/finopsia.db")
 TEST_USER = {
     "username": "alice",
     "password": "hash1",
-    "user_id": 1,
-}
-
-TEST_ACCOUNT = {
-    "account_id": "1",
-    "user_id": TEST_USER["user_id"],
 }
 
 def setup_module(module):
@@ -40,19 +34,28 @@ def setup_module(module):
 
 def test_full_pipeline():
     # Simulate login (in real app, this would be an API call)
-    user_id = TEST_USER["user_id"]
-    account_id = TEST_ACCOUNT["account_id"]
+    user = fetch_user_by_username(TEST_USER["username"])
+    assert user is not None
+
+    user_id = user["user_id"]
+    account_ids = fetch_user_account_ids(user_id)
+    account_id = account_ids[0]
+
+    raw_df = pd.read_csv("data/raw/transactions.csv")
+    scoped_df = raw_df[raw_df["account_id"].astype(str).isin(account_ids)]
+    scoped_csv_path = Path("data/raw/transactions_alice.csv")
+    scoped_df.to_csv(scoped_csv_path, index=False)
 
     # Fetch account metadata (should be scoped to user)
     meta = fetch_account_metadata(account_id, user_id=user_id)
     assert meta["account_id"] == account_id
 
     # Run ingestion (simulate uploading a CSV for this user)
-    run_ingestion(user_id=user_id)
+    run_ingestion(csv_path=scoped_csv_path, user_id=user_id)
 
     # Run the full pipeline (categorization, persistence, forecasting)
     run_pipeline(
-        csv_path=Path("data/raw/transactions.csv"),
+        csv_path=scoped_csv_path,
         user_id=user_id,
         account_id=account_id,
         forecast=True,
@@ -61,7 +64,7 @@ def test_full_pipeline():
     )
 
     # Check that transactions are present and scoped to the account
-    txns = fetch_transactions(account_id)
+    txns = fetch_transactions(account_id, user_id=user_id)
     assert not txns.empty
 
     # Optionally: Check logs for correct user_id/account_id context (manual or with log parsing)

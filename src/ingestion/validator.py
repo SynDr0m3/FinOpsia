@@ -1,7 +1,7 @@
 from typing import List
 import pandas as pd
-from monitoring.logger import logger
-from core.currency import to_smallest_unit
+from src.monitoring.logger import logger
+from src.core.currency import to_smallest_unit
 
 
 """
