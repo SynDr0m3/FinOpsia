@@ -11,9 +11,15 @@ venv/
 
 # Database files
 *.db
+*.db-shm
+*.db-wal
+*.db-journal
 
 # Processed and raw CSV files
 data/**/*.csv
+data/cmdstan/
+data/cmdstan-test/
+data/prophet-debug/
 
 # Unit test / coverage reports
 htmlcov/
@@ -27,6 +33,8 @@ htmlcov/
 
 # Logs
 *.log
+logs/
+logs/*.zip
 
 # Jupyter
 .ipynb_checkpoints/
@@ -36,6 +44,8 @@ htmlcov/
 
 # Misc
 .DS_Store
+_avast_/
+FinOpsia/
 
 # ML model artifacts
 *.joblib
