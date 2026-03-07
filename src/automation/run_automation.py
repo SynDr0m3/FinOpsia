@@ -2,9 +2,9 @@
 Entrypoint for FinOpsia automation service.
 Starts the scheduler and schedules real pipeline jobs.
 """
-from automation.scheduler import add_cron_job, start_scheduler
-from automation.tasks import ingest_transactions, retrain_forecasters, run_forecasts
-from monitoring.logger import logger
+from src.automation.scheduler import add_cron_job, start_scheduler
+from src.automation.tasks import ingest_transactions, retrain_forecasters, run_forecasts
+from src.monitoring.logger import logger
 import time
 
 if __name__ == "__main__":
