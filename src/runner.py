@@ -7,18 +7,18 @@ Flow:
 """
 
 from pathlib import Path
-from monitoring.logger import logger
+from src.monitoring.logger import logger
 import pandas as pd
 
 # Ingestion
-from ingestion.reader import read_transactions
-from ingestion.validator import validate_transactions
-from ingestion.loader import load_transactions
+from src.ingestion.reader import read_transactions
+from src.ingestion.validator import validate_transactions
+from src.ingestion.loader import load_transactions
 
 # ML
-from ml.persistence import get_model, ModelNotFoundError
-from ml import categorizer
-from ml.forecaster import forecast_balance
+from src.ml.persistence import get_model, ModelNotFoundError
+from src.ml import categorizer
+from src.ml.forecaster import forecast_balance
 
 # Defaults
 DEFAULT_CSV_PATH = Path("data/raw/transactions.csv")
@@ -123,6 +123,7 @@ def run_pipeline(
         forecaster_model = get_model(
             model_type="forecaster",
             account_id=account_id,
+            user_id=user_id,
         )
 
         logger.info(
@@ -141,4 +142,4 @@ def run_pipeline(
 
 
 if __name__ == "__main__":
-    run_pipeline(csv_path=DEFAULT_CSV_PATH, user_id="test_user")
+    run_pipeline(csv_path=DEFAULT_CSV_PATH, user_id=1)
