@@ -1,6 +1,6 @@
 from typing import Optional
 import pandas as pd
-from monitoring.logger import logger
+from src.monitoring.logger import logger
 from catboost import CatBoostClassifier
 
 

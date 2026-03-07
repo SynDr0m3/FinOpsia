@@ -13,7 +13,8 @@ Policy enforcement:
 
 from pathlib import Path
 from typing import Any, Dict
-from monitoring.logger import logger
+from src.monitoring.logger import logger
+from src.db.repositories import fetch_account_owner_id, verify_account_ownership
 import joblib
 from . import categorizer, forecaster
 
@@ -44,6 +45,20 @@ MODEL_POLICY = {
 class ModelNotFoundError(Exception):
     """Raised when a required model is missing and cannot be auto-trained."""
     pass
+
+
+def _resolve_forecaster_user_id(account_id: str, user_id: int | str | None) -> int:
+    """Resolve and validate the owning user for an account-scoped model."""
+    owner_id = fetch_account_owner_id(account_id)
+    if user_id is None:
+        return owner_id
+    if isinstance(user_id, str) and user_id.isdigit():
+        user_id = int(user_id)
+    if isinstance(user_id, int) and verify_account_ownership(account_id, user_id):
+        return user_id
+    if isinstance(user_id, int):
+        raise PermissionError(f"User {user_id} does not own account {account_id}")
+    return owner_id
 
 
 def _model_path(name: str, account_id: str | None) -> Path:
@@ -131,11 +146,9 @@ def get_model(
 
     # ---- 4. Auto-train (forecaster only) ----
 
-    if user_id is None:
-        logger.info(f"{cache_key} not found, but user_id not provided for lazy training", extra={"account_id": account_id, "user_id": None})
-        raise NotImplementedError("user_id must be provided for training forecaster in multi-tenant context")
-    logger.info(f"{cache_key} not found, initiating auto-training", extra={"account_id": account_id, "user_id": user_id})
-    model = forecaster.train_model(account_id=account_id, user_id=user_id)
+    resolved_user_id = _resolve_forecaster_user_id(account_id, user_id)
+    logger.info(f"{cache_key} not found, initiating auto-training", extra={"account_id": account_id, "user_id": resolved_user_id})
+    model = forecaster.train_model(account_id=account_id, user_id=resolved_user_id)
     _save_model(model, path, cache_key)
     _MODEL_CACHE[cache_key] = model
     return model
@@ -184,10 +197,8 @@ def train_and_save_model(
     elif model_type == "forecaster":
         if not account_id:
             raise ValueError("account_id is required for forecaster retraining")
-        user_id = train_kwargs.get("user_id")
-        if not user_id:
-            raise ValueError("user_id is required for forecaster retraining in multi-tenant context")
-        model = forecaster.train_model(account_id=account_id, user_id=user_id)
+        resolved_user_id = _resolve_forecaster_user_id(account_id, train_kwargs.get("user_id"))
+        model = forecaster.train_model(account_id=account_id, user_id=resolved_user_id)
         cache_key = f"forecaster:{account_id}"
         path = _model_path(model_type, account_id)
 
